@@ -21,7 +21,6 @@
   "background": {
     "service_worker": "background.js"
   },
-  "optional_permissions": ["tabs"],
   "permissions": ["tabs", "storage"],
   "short_name": "URL Terminator",
   "version_name": "Beta"

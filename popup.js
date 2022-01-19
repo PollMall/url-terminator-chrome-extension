@@ -1,30 +1,88 @@
-const lsLinksKey = 'url-terminator-links';
-const lsBlockedLinksKey = 'url-terminator-blocked-links';
+////////// Constants
+const lsLinksKey = "url-terminator-links";
+const lsBlockedLinksKey = "url-terminator-blocked-links";
 
+////////// HTML Elements
+const table = document.querySelector('table');
 const newLink = document.getElementById("new-link");
 const addBtn = document.getElementById("add-link");
 const toggle = document.getElementById("toggle");
 
-// Disabled state of add btn
-newLink.onchange = (e) => {
-  addBtn.disabled = !e.target.value;
+////////// Helpers
+const getLocalStorageLinks = async () => {
+  const { [lsLinksKey]: links } = await chrome.storage.sync.get(lsLinksKey);
+  return Array.isArray(links) ? links : { [lsLinksKey]: [] };
 }
+const setLocalStorageLinks = (links) => chrome.storage.sync.set({ [lsLinksKey]: links || [] });
+const removeLocalStorageBlockedLinks = () => chrome.storage.sync.remove(lsBlockedLinksKey);
+const setLocalStorageBlockedLinks = (blockedLinks) => chrome.storage.sync.set({ [lsBlockedLinksKey]: blockedLinks || [] });
+const validateNewLink = async (link) => {
+  const links = await getLocalStorageLinks();
+  return links.find((l) => l === link) === undefined;
+};
+const syncLocalStorageLinks = () => setLocalStorageBlockedLinks(getLocalStorageLinks());
+const syncTableView = async () => {
+  links = await getLocalStorageLinks();
+  const tableRows = links.reduce((tableBody, l) => tableBody + createTableRow({ url: l }), '');
+  table.innerHTML = tableRows;
+  
+  // add callback for remove btns
+  const deleteBtns = table.querySelectorAll('button');
+  deleteBtns.forEach((btn) => {
+    const id = btn.id;
+    btn.onclick = () => deleteLink(id.replace(/delete-link-/,''));
+  });
+}
+
+////////// Handlers
+// Disabled state of add btn
+newLink.onchange = async (e) => {
+  const link = e.target.value;
+  addBtn.disabled = !link || !(await validateNewLink(link));
+};
 
 // Add a new link to the list
-addBtn.onclick = () => {
-  const links = JSON.parse(localStorage.getItem(lsLinksKey)) || [];
+addBtn.onclick = async () => {
+  links = await getLocalStorageLinks();
   links.push(newLink.value);
-  localStorage.setItem(lsLinksKey, JSON.stringify(links));
-}
+  await setLocalStorageLinks(links);
+  newLink.value = '';
+  await syncTableView();
+};
 
 // Block/unblock links
-toggle.onchange = (e) => {
+toggle.onchange = async (e) => {
   if (e.target.checked) {
     // block links
-    const links = JSON.parse(localStorage.getItem(lsLinksKey)) || [];
-    localStorage.setItem(lsBlockedLinksKey, JSON.stringify(links));
+    links = await getLocalStorageLinks();
+    await setLocalStorageBlockedLinks(links);
   } else {
     // unblock links
-    localStorage.removeItem(lsBlockedLinksKey);
+    await removeLocalStorageBlockedLinks();
   }
-}
+};
+
+const deleteLink = async (link) => {
+  links = await getLocalStorageLinks();
+  await setLocalStorageLinks(links.filter((l) => l !== link));
+  await syncTableView();
+};
+
+////////// Components
+const createTableRow = ({ url }) => (
+`
+<tr>
+  <td class="d-flex align-items-center">
+    <span class="flex-grow-1 text-break">
+      ${url}
+    </span>
+    <div class="vr mx-2"></div>
+    <button id="delete-link-${url}" type="button" class="btn btn-outline-danger btn-sm">
+      <span class="bi bi-trash-fill"></span>
+    </button>
+  </td>
+</tr>
+`);
+
+////////// Initial state of the app
+syncTableView();
