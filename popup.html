@@ -9,9 +9,27 @@
   <style>
     body {
       width: 400px;
+      /* min-height: 310px; */
     }
     h6,p {
       margin: 0;
+    }
+    .gif-container {
+      width: 100%;
+      height: 100%;
+    }
+    .gif {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: auto;
+      margin: 0 auto;
+      transform: translate(-50%, -50%);
+    }
+    .gif-active {
+      display: initial;
     }
   </style>
   <script src="./popup.js" defer></script>
@@ -69,6 +87,10 @@
     <footer>
       <small class="d-block text-center fst-italic text-wrap text-secondary">Kill your distractions, improve your focus.</small>
     </footer>
+    <div class="gif-container">
+      <img id="toggle-on-gif" class="gif" src="images/toggle-on.gif" alt="Toggle on GIF" />
+      <img id="toggle-off-gif" class="gif" src="images/toggle-off.gif" alt="Toggle on GIF" />
+    </div>
   </div>
 </body>
 </html>

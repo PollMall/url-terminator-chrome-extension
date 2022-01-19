@@ -7,11 +7,13 @@ const table = document.querySelector('table');
 const newLink = document.getElementById("new-link");
 const addBtn = document.getElementById("add-link");
 const toggle = document.getElementById("toggle");
+const toggleOnGif = document.getElementById("toggle-on-gif");
+const toggleOffGif = document.getElementById("toggle-off-gif");
 
 ////////// Helpers
 const getLocalStorageLinks = async () => {
   const { [lsLinksKey]: links } = await chrome.storage.sync.get(lsLinksKey);
-  return Array.isArray(links) ? links : { [lsLinksKey]: [] };
+  return Array.isArray(links) ? links : [];
 }
 const setLocalStorageLinks = (links) => chrome.storage.sync.set({ [lsLinksKey]: links || [] });
 const removeLocalStorageBlockedLinks = () => chrome.storage.sync.remove(lsBlockedLinksKey);
@@ -56,10 +58,16 @@ toggle.onchange = async (e) => {
     // block links
     links = await getLocalStorageLinks();
     await setLocalStorageBlockedLinks(links);
+    toggleOnGif.classList.add('gif-active');
   } else {
     // unblock links
     await removeLocalStorageBlockedLinks();
+    toggleOffGif.classList.add('gif-active');
   }
+  setTimeout(() => {
+    toggleOnGif.classList.remove('gif-active');
+    toggleOffGif.classList.remove('gif-active');
+  }, 2500);
 };
 
 const deleteLink = async (link) => {
