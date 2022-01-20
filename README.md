@@ -1,2 +1,2 @@
 # URL Terminator
- A simple URL blocker to help you concentrate more on your important taks
+A minimal URL blocker to help you stay focused whilst working. Keep your attention!
