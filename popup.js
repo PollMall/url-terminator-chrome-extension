@@ -1,6 +1,6 @@
 ////////// Constants
 const lsLinksKey = "url-terminator-links";
-const lsBlockedLinksKey = "url-terminator-blocked-links";
+const lsToggle = "url-terminator-toggle";
 
 let toggleGifTimeout;
 
@@ -17,18 +17,21 @@ const getLocalStorageLinks = async () => {
   const { [lsLinksKey]: links } = await chrome.storage.sync.get(lsLinksKey);
   return Array.isArray(links) ? links : [];
 }
+
 const setLocalStorageLinks = (links) => chrome.storage.sync.set({ [lsLinksKey]: links || [] });
-const removeLocalStorageBlockedLinks = () => chrome.storage.sync.remove(lsBlockedLinksKey);
-const setLocalStorageBlockedLinks = (blockedLinks) => chrome.storage.sync.set({ [lsBlockedLinksKey]: blockedLinks || [] });
-const getLocalStorageBlockedLinks = async () => {
-  const { [lsBlockedLinksKey]: links } = await chrome.storage.sync.get(lsBlockedLinksKey);
-  return Array.isArray(links) ? links : [];
+
+const getLocalStorageToggle = async () => {
+  const { [lsToggle]: toggle } = await chrome.storage.sync.get(lsToggle);
+  return toggle;
 }
+
+const setLocalStorageToggle = (toggle) => chrome.storage.sync.set({ [lsToggle]: toggle });
+
 const validateNewLink = async (link) => {
   const links = await getLocalStorageLinks();
   return links.find((l) => l === link) === undefined;
 };
-const syncLocalStorageLinks = () => setLocalStorageBlockedLinks(getLocalStorageLinks());
+
 const syncTableView = async () => {
   links = await getLocalStorageLinks();
   const tableRows = links.reduce((tableBody, l) => tableBody + createTableRow({ url: l }), '');
@@ -41,9 +44,9 @@ const syncTableView = async () => {
     btn.onclick = () => deleteLink(id.replace(/delete-link-/,''));
   });
 }
+
 const syncToggleView = async () => {
-  const blockedLinks = await getLocalStorageBlockedLinks();
-  toggle.checked = !!blockedLinks.length;
+  toggle.checked = await getLocalStorageToggle();
 }
 
 ////////// Handlers
@@ -71,14 +74,15 @@ toggle.onchange = async (e) => {
   toggleOnGif.classList.remove('gif-active');
   toggleOffGif.classList.remove('gif-active');
 
-  if (e.target.checked) {
+  // set toggle value in local storage
+  const toggleValue = e.target.checked;
+  await setLocalStorageToggle(toggleValue);
+
+  if (toggleValue) {
     // block links
-    links = await getLocalStorageLinks();
-    await setLocalStorageBlockedLinks(links);
     toggleOnGif.classList.add('gif-active');
   } else {
     // unblock links
-    await removeLocalStorageBlockedLinks();
     toggleOffGif.classList.add('gif-active');
   }
   toggleGifTimeout = setTimeout(() => {
@@ -88,7 +92,7 @@ toggle.onchange = async (e) => {
 };
 
 const deleteLink = async (link) => {
-  links = await getLocalStorageLinks();
+  const links = await getLocalStorageLinks();
   await setLocalStorageLinks(links.filter((l) => l !== link));
   await syncTableView();
 };

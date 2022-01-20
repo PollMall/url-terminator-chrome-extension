@@ -1,4 +1,5 @@
-const lsBlockedLinksKey = "url-terminator-blocked-links";
+const lsLinksKey = "url-terminator-links";
+const lsToggle = "url-terminator-toggle";
 
 const removeTrailingSlash = (url) => url.replace(/\/+$/,'');
 const removeHTTPProtocol = (url) => url.replace(/https?:\/\//,'');
@@ -14,9 +15,14 @@ const getCurrentTab = async () => {
   return tab;
 }
 
-const getLsBlockedLinks = async () => {
-  const { [lsBlockedLinksKey]: links } = await chrome.storage.sync.get(lsBlockedLinksKey);
+const getLocalStorageLinks = async () => {
+  const { [lsLinksKey]: links } = await chrome.storage.sync.get(lsLinksKey);
   return Array.isArray(links) ? links : [];
+}
+
+const getLocalStorageToggle = async () => {
+  const { [lsToggle]: toggle } = await chrome.storage.sync.get(lsToggle);
+  return toggle;
 }
 
 const removeTab = async (tabId) => {
@@ -37,8 +43,9 @@ chrome.runtime.onInstalled.addListener((reason) => {
 
 chrome.tabs.onUpdated.addListener(async () => {
   const { id, url } = await getCurrentTab();
-  const blockedLinks = await getLsBlockedLinks();
-  if(blockedLinks.find((bl) => sanitizeUrl(bl) === sanitizeUrl(url)) !== undefined) {
+  const blockedLinks = await getLocalStorageLinks();
+  const block = await getLocalStorageToggle();
+  if(block && blockedLinks.find((bl) => sanitizeUrl(bl) === sanitizeUrl(url)) !== undefined) {
     await removeTab(id);
   }
 });
