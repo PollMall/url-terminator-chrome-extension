@@ -2,6 +2,8 @@
 const lsLinksKey = "url-terminator-links";
 const lsBlockedLinksKey = "url-terminator-blocked-links";
 
+let toggleGifTimeout;
+
 ////////// HTML Elements
 const table = document.querySelector('table');
 const newLink = document.getElementById("new-link");
@@ -54,6 +56,13 @@ addBtn.onclick = async () => {
 
 // Block/unblock links
 toggle.onchange = async (e) => {
+  // disable any left timeout
+  toggleGifTimeout && clearTimeout(toggleGifTimeout);
+
+  // remove any left gif-active class name
+  toggleOnGif.classList.remove('gif-active');
+  toggleOffGif.classList.remove('gif-active');
+
   if (e.target.checked) {
     // block links
     links = await getLocalStorageLinks();
@@ -64,7 +73,7 @@ toggle.onchange = async (e) => {
     await removeLocalStorageBlockedLinks();
     toggleOffGif.classList.add('gif-active');
   }
-  setTimeout(() => {
+  toggleGifTimeout = setTimeout(() => {
     toggleOnGif.classList.remove('gif-active');
     toggleOffGif.classList.remove('gif-active');
   }, 2500);
