@@ -20,6 +20,10 @@ const getLocalStorageLinks = async () => {
 const setLocalStorageLinks = (links) => chrome.storage.sync.set({ [lsLinksKey]: links || [] });
 const removeLocalStorageBlockedLinks = () => chrome.storage.sync.remove(lsBlockedLinksKey);
 const setLocalStorageBlockedLinks = (blockedLinks) => chrome.storage.sync.set({ [lsBlockedLinksKey]: blockedLinks || [] });
+const getLocalStorageBlockedLinks = async () => {
+  const { [lsBlockedLinksKey]: links } = await chrome.storage.sync.get(lsBlockedLinksKey);
+  return Array.isArray(links) ? links : [];
+}
 const validateNewLink = async (link) => {
   const links = await getLocalStorageLinks();
   return links.find((l) => l === link) === undefined;
@@ -36,6 +40,10 @@ const syncTableView = async () => {
     const id = btn.id;
     btn.onclick = () => deleteLink(id.replace(/delete-link-/,''));
   });
+}
+const syncToggleView = async () => {
+  const blockedLinks = await getLocalStorageBlockedLinks();
+  toggle.checked = !!blockedLinks.length;
 }
 
 ////////// Handlers
@@ -103,3 +111,4 @@ const createTableRow = ({ url }) => (
 
 ////////// Initial state of the app
 syncTableView();
+syncToggleView();
