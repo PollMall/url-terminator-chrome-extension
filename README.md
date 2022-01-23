@@ -1,5 +1,7 @@
 # URL Terminator
-A minimal URL blocker to help you stay focused whilst working. Keep your attention!
+A minimal URL blocker to help you stay focused whilst working.Keep your attention!
+
+Extension link on *Chrome Web Store*: https://chrome.google.com/webstore/detail/url-terminator/cdbogljgacceohhekedgkcfglicmgnnf
 
 Have a quick look at the interface:
 
