@@ -43,7 +43,7 @@ const checkForBlockedLinks = async (tabId, tabUrl) => {
   const escapedLinks = getEscapedLinks(blockedLinks);
 
   // If tab URL is an escaped URL do nothing
-  if(escapedLinks.find((el) => el === tabUrl)) return;
+  if(escapedLinks.find((el) => sanitizeUrl(tabUrl)?.includes(sanitizeUrl(el)))) return;
 
   // Check if tab URL is the exact path or subpath of any blocked link 
   if(block && blockedLinks.find((bl) => sanitizeUrl(tabUrl)?.includes(sanitizeUrl(bl)))) {
@@ -58,6 +58,6 @@ chrome.tabs.onActivated.addListener(async () => {
 })
 
 // For manyally inserting a URL
-chrome.tabs.onUpdated.addListener(async (id, { url }) => {
+chrome.tabs.onUpdated.addListener(async (id, _, { url }) => {
   await checkForBlockedLinks(id, url);
 });
