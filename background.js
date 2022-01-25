@@ -45,17 +45,7 @@ chrome.tabs.onUpdated.addListener(async () => {
   const { id, url } = await getCurrentTab();
   const blockedLinks = await getLocalStorageLinks();
   const block = await getLocalStorageToggle();
-  if(block && blockedLinks.find((bl) => sanitizeUrl(bl) === sanitizeUrl(url)) !== undefined) {
+  if(block && blockedLinks.find((bl) => sanitizeUrl(url).includes(sanitizeUrl(bl)))) {
     await removeTab(id);
   }
 });
-
-// chrome.tabs.onAttached.addListener((tabId, props) => {
-//   console.log('onAttached');
-//   console.log(props);
-// });
-
-// chrome.tabs.onCreated.addListener((tab) => {
-//   console.log('onCreated');
-//   console.log(tab);
-// });
