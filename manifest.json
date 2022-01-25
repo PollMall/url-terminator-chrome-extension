@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "URL Terminator",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A minimal URL blocker to help you stay focused whilst working. Keep your attention!",
   "icons": {
     "16": "./icons/icon16.png",
@@ -22,6 +22,5 @@
     "service_worker": "background.js"
   },
   "permissions": ["tabs", "storage"],
-  "short_name": "URL Terminator",
-  "version_name": "Beta"
+  "short_name": "URL Terminator"
 }
