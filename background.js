@@ -1,9 +1,9 @@
 const lsLinksKey = "url-terminator-links";
 const lsToggle = "url-terminator-toggle";
 
-const removeTrailingSlash = (url) => url.replace(/\/+$/,'');
-const removeHTTPProtocol = (url) => url.replace(/https?:\/\//,'');
-const removeWWW = (url) => url.replace(/www\./,'');
+const removeTrailingSlash = (url) => url?.replace(/\/+$/,'');
+const removeHTTPProtocol = (url) => url?.replace(/https?:\/\//,'');
+const removeWWW = (url) => url?.replace(/www\./,'');
 
 const sanitizeUrl = (url) => (
   [url].map((url) => removeTrailingSlash(url)).map((url) => removeHTTPProtocol(url)).map((url) => removeWWW(url)).pop()
@@ -33,19 +33,22 @@ const removeTab = async (tabId) => {
   }
 }
 
-chrome.runtime.onInstalled.addListener((reason) => {
-  if(reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    // chrome.tabs.create();
-    console.log('installed');
-  }
-  // chrome.tabs.create();
-})
-
-chrome.tabs.onUpdated.addListener(async () => {
-  const { id, url } = await getCurrentTab();
+const checkForBlockedLinks = async (tabId, tabUrl) => {
   const blockedLinks = await getLocalStorageLinks();
   const block = await getLocalStorageToggle();
-  if(block && blockedLinks.find((bl) => sanitizeUrl(url).includes(sanitizeUrl(bl)))) {
-    await removeTab(id);
+
+  if(block && blockedLinks.find((bl) => sanitizeUrl(tabUrl)?.includes(sanitizeUrl(bl)))) {
+    await removeTab(tabId);
   }
+}
+
+// For duplicating/opening a URL in a new tab
+chrome.tabs.onActivated.addListener(async () => {
+  const { id, url } = await getCurrentTab();
+  await checkForBlockedLinks(id, url);
+})
+
+// For manyally inserting a URL
+chrome.tabs.onUpdated.addListener(async (id, { url }) => {
+  await checkForBlockedLinks(id, url);
 });
