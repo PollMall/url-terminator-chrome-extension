@@ -22,8 +22,46 @@
     .gif-active {
       display: initial;
     }
+    .bi-trash-fill {
+      color: red;
+    }
+    td.table-row {
+      position: relative;
+      padding: 0;
+    }
+    .table-row-action {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      z-index: -1;
+    }
+    .table-row-data {
+      padding: 8px;
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transition: 0.1s width ease-in, 0.1s box-shadow ease-in;
+      background-color: #fff;
+      clip-path: inset(0px -15px 0px 0px);
+    }
+    .table-row-data:hover {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: calc(100% - 36px);
+      border-right: 1px solid #ccc;
+      box-shadow: 4px 0 8px 2px #ccc;
+    }
+    .table-row-data-shrink {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: calc(100% - 24px);
+    }
   </style>
-  <script src="./popup.js" defer></script>
+  <!-- <script src="./popup.js" defer></script> -->
 </head>
 <body>
   <div class="container p-3">
@@ -40,29 +78,12 @@
       <div>
         <table class="table table-bordered m-0">
           <tr>
-            <td class="d-flex align-items-center">
-              <span class="flex-grow-1 text-break">
-                https://getbootstrap.com/docs/5.1/helpers/vertical-rule/#how-it-works
+            <td class="table-row d-flex align-items-center">
+              <span class="table-row-data text-break">
+                https://getbootstrap.com
               </span>
-              <div class="vr mx-2"></div>
-              <button id="delete-link" type="button" class="btn btn-outline-danger btn-sm">
+              <div class="table-row-action">
                 <span class="bi bi-trash-fill"></span>
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td class="d-flex align-items-center">
-              <span class="flex-grow-1">
-                <input type="text" class="form-control" placeholder="https://www.example.com">
-              </span>
-              <div class="vr mx-2"></div>
-              <div class="btn-group">
-                <button id="update-link" type="button" class="btn btn-outline-success btn-sm">
-                  <span class="bi bi-check"></span>
-                </button>
-                <button id="cancel" type="button" class="btn btn-outline-secondary btn-sm">
-                  <span class="bi bi-x"></span>
-                </button>
               </div>
             </td>
           </tr>
