@@ -28,13 +28,17 @@
     td.table-row {
       position: relative;
       padding: 0;
+      cursor: pointer;
     }
     .table-row-action {
       position: absolute;
       top: 50%;
-      right: 8px;
+      right: 0;
+      width: 100%;
+      height: 100%;
       transform: translateY(-50%);
       z-index: -1;
+      box-shadow: inset 0 0 4px 2px #ccc;
     }
     .table-row-data {
       padding: 8px;
@@ -52,7 +56,7 @@
       left: 0;
       width: calc(100% - 36px);
       border-right: 1px solid #ccc;
-      box-shadow: 4px 0 8px 2px #ccc;
+      box-shadow: 2px 0 8px 2px #ccc;
     }
     .table-row-data-shrink {
       position: relative;
@@ -82,7 +86,7 @@
               <span class="table-row-data text-break">
                 https://getbootstrap.com
               </span>
-              <div class="table-row-action">
+              <div class="table-row-action d-flex justify-content-end align-items-center p-2">
                 <span class="bi bi-trash-fill"></span>
               </div>
             </td>
